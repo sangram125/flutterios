@@ -53,8 +53,8 @@ jobs:
         run: flutter pub get
 
       - name: Build iOS application archive
-        run: flutter build ipa --export-options-plist=ios/Runner/ExportOptions.plist 
-
+        run: flutter build ipa --export-options-plist=ios/Runner/ExportOptions.plist --xcodeflags "-allowProvisioningUpdates"
+        
       - name: Clean up keychain and provisioning profile
         if: ${{ always() }}
         run: |
