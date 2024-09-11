@@ -10,7 +10,7 @@
        <key>provisioningProfiles</key>
        <dict>
            <key>tv.dorplay.companion</key>
-           <string>cicd-deploy-build</string>
+           <string>cicd-new</string>
        </dict>
    </dict>
 </plist>
