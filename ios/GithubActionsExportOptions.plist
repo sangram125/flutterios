@@ -4,21 +4,10 @@
 <dict>
     <key>signingStyle</key>
     <string>manual</string>
-    <key>method</key>
-    <string>development</string>
     <key>provisioningProfiles</key>
     <dict>
-        <!-- Replace with your App ID and provisioning profile name -->
         <key>tv.dorplay.companion</key>
         <string>cicd-deploy-build</string>
     </dict>
-    <key>teamID</key>
-    <string>MM7U35V4FZ</string> <!-- Your Apple Developer Team ID -->
-    <key>compileBitcode</key>
-    <false/>
-    <key>destination</key>
-    <string>export</string>
-    <key>iCloudContainerEnvironment</key>
-    <string>Production</string>
 </dict>
 </plist>
