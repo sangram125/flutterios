@@ -56,7 +56,7 @@ jobs:
         run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/Runner/ExportOptions.plist
 
       - name: Publish iOS Artefacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: release-ios
           path: build-output/ios
