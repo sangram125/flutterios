@@ -1,62 +1,66 @@
-name: Build and Deploy iOS App
+name: Flutter_iOS
 
 on:
   push:
-    branches:
-      - master
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build_ios:
-    runs-on: macos-12
+    runs-on: macos-latest
+    env:
+      SHEME: Runner
+      BUILD_CONFIGURATION: Release
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Checkout the code
+        uses: actions/checkout@v2
 
-      - name: Import certificates (iOS)
+      - name: Install Apple Certificate
+        uses: apple-actions/import-codesign-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.P12_BASE64 }}
+          p12-password: ${{ secrets.P12_PASSWORD }}
+
+      - name: Install the provisioning profile
         env:
-          APPSTORE_CERT_BASE64: ${{ secrets.APPSTORE_CERT_BASE64 }}
-          APPSTORE_CERT_PASSWORD: ${{ secrets.APPSTORE_CERT_PASSWORD }}
-          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.BUILD_PROVISION_PROFILE_BASE64 }}
-          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
         run: |
-          # Create variables
-          CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          # create variables
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
-          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
-          # Import certificate and provisioning profile from secrets
-          echo -n "$APPSTORE_CERT_BASE64" | base64 --decode -o $CERTIFICATE_PATH
-          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
+          # import provisioning profile from secrets
+          echo -n "$PROVISIONING_PROFILE_BASE64" | base64 --decode --output $PP_PATH
 
-          # Create temporary keychain
-          security create-keychain -p $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
-          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
-          security unlock-keychain -p $KEYCHAIN_PASSWORD $KEYCHAIN_PATH
-
-          # Import certificate to keychain
-          security import $CERTIFICATE_PATH -P $APPSTORE_CERT_PASSWORD -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
-          security list-keychains -d user -s $KEYCHAIN_PATH
-
-          # Apply provisioning profile
+          # apply provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
-      - name: Install Flutter
-        uses: subosito/flutter-action@v2
+      - name: Install and set Flutter version
+        uses: subosito/flutter-action@v1.4.0
         with:
-          flutter-version: "3.22.3"
-          channel: 'stable'
-          cache: true
+          flutter-version: '2.0.1'
 
-      - name: Get dependencies
+      - name: Restore packages
         run: flutter pub get
 
-      - name: Build iOS application archive
-        run: flutter build ipa --export-options-plist=ios/Runner/ExportOptions.plist 
-        
-      - name: Clean up keychain and provisioning profile
-        if: ${{ always() }}
+      - name: Build Flutter
+        run: flutter build ios --release --no-codesign
+
+      - name: Build resolve Swift dependencies
+        run: xcodebuild -resolvePackageDependencies -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release
+
+      - name: Build xArchive
+      
         run: |
-          security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
-          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
+          xcodebuild -workspace ios/Runner.xcworkspace -scheme Runner -configuration Release DEVELOPMENT_TEAM=MM7U35V4FZ -sdk 'iphoneos' -destination 'generic/platform=iOS' -archivePath build-output/app.xcarchive PROVISIONING_PROFILE=1be8fe00-7e2b-4c7f-a78d-4c593451fe8c clean archive CODE_SIGN_IDENTITY="Apple Distribution: Raviteja Mogali"
+
+      - name: Export ipa
+        run: xcodebuild -exportArchive -archivePath build-output/app.xcarchive -exportPath build-output/ios -exportOptionsPlist ios/Runner/ExportOptions.plist
+
+      - name: Publish iOS Artefacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: release-ios
+          path: build-output/ios
