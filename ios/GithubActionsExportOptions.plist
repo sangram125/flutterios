@@ -2,16 +2,23 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>method</key>
-  <string>ad-hoc</string> <!-- app-store, ad-hoc, enterprise, development -->
-  <key>teamID</key>
-  <string>MM7U35V4FZ</string>
-  <key>signingStyle</key>
-  <string>manual</string>
-  <key>provisioningProfiles</key>
-  <dict>
-    <key>tv.dorplay.companion</key>
-    <string>cicd-ad-hoc</string> <!-- This string should be the name of the provisioning profile -->
-  </dict>
+    <key>signingStyle</key>
+    <string>manual</string>
+    <key>method</key>
+    <string>ad-hoc</string>
+    <key>provisioningProfiles</key>
+    <dict>
+        <!-- Replace with your App ID and provisioning profile name -->
+        <key>tv.dorplay.companion</key>
+        <string>cicd-ad-hoc</string>
+    </dict>
+    <key>teamID</key>
+    <string>MM7U35V4FZ</string> <!-- Your Apple Developer Team ID -->
+    <key>compileBitcode</key>
+    <false/>
+    <key>destination</key>
+    <string>export</string>
+    <key>iCloudContainerEnvironment</key>
+    <string>Production</string>
 </dict>
 </plist>
