@@ -3,10 +3,10 @@ name: Build and Sign Flutter iOS App
 on:
   push:
     branches:
-      - main  # or your target branch
+      - master  # or your target branch
   pull_request:
     branches:
-      - main  # or your target branch
+      - master  # or your target branch
 
 jobs:
   build:
