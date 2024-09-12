@@ -3,15 +3,15 @@
 <plist version="1.0">
 <dict>
   <key>method</key>
-  <string>development</string> <!-- app-store, ad-hoc, enterprise, development -->
+  <string>ad-hoc</string> <!-- app-store, ad-hoc, enterprise, development -->
   <key>teamID</key>
   <string>MM7U35V4FZ</string>
-	<key>signingStyle</key>
-	<string>manual</string>
+  <key>signingStyle</key>
+  <string>manual</string>
   <key>provisioningProfiles</key>
-	<dict>
-		<key>tv.dorplay.companion</key>
-		<string>1be8fe00-7e2b-4c7f-a78d-4c593451fe8c</string>
-	</dict>
+  <dict>
+    <key>tv.dorplay.companion</key>
+    <string>cicd-ad-hoc</string> <!-- This string should be the name of the provisioning profile -->
+  </dict>
 </dict>
 </plist>
