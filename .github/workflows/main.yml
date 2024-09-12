@@ -3,10 +3,10 @@ name: Build and Sign Flutter iOS App
 on:
   push:
     branches:
-      - master  # or your target branch
+      - main  # or your target branch
   pull_request:
     branches:
-      - master  # or your target branch
+      - main  # or your target branch
 
 jobs:
   build:
@@ -28,13 +28,16 @@ jobs:
         run: |
           echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > certificate.p12
           echo "${{ secrets.PROFILE_BASE64 }}" | base64 --decode > profile.mobileprovision
-          
+
+          # Verify the certificate file
+          ls -l certificate.p12
+
           # Create and unlock keychain
           security create-keychain -p "" build.keychain
           security import certificate.p12 -k ~/Library/Keychains/build.keychain -P "${{ secrets.CERTIFICATE_PASSWORD }}" -A
           security unlock-keychain -p "" ~/Library/Keychains/build.keychain
           security set-keychain-settings -t 3600 -u ~/Library/Keychains/build.keychain
-          
+
           # Install provisioning profile
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
