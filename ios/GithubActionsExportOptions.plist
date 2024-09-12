@@ -5,11 +5,11 @@
     <key>generateAppStoreInformation</key>
     <false/>
     <key>method</key>
-    <string>development</string>
+    <string>App-Store</string>
     <key>provisioningProfiles</key>
     <dict>
       <key>tv.dorplay.companion</key>
-      <string>847bb7b2-b4b8-4863-a860-50d97d18870d</string>
+      <string>d20ada99-cfe6-4bb9-9c29-8ba08cd5b89e</string>
     </dict>
     <key>signingCertificate</key>
     <string>Apple Distribution</string>
