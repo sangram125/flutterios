@@ -52,4 +52,4 @@ jobs:
           ls -la ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Build iOS
-        run: flutter build ipa --export-options-plist=ExportOptions.plist
+        run: flutter build ipa --export-options-plist=ios/GithubActionsExportOptions.plist
