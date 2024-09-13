@@ -9,12 +9,7 @@
     <key>method</key>
     <string>release-testing</string>
     <key>signingStyle</key>
-    <string>manual</string> <!-- Changed from automatic to manual -->
-    <key>provisioningProfiles</key>
-    <dict>
-        <key>tv.dorplay.companion</key> <!-- Replace this with your app's identifier -->
-        <string>cicd-deploy-build</string> <!-- Replace with your provisioning profile name -->
-    </dict>
+    <string>manual</string>
     <key>stripSwiftSymbols</key>
     <true/>
     <key>teamID</key>
