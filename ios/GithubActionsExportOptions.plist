@@ -7,21 +7,19 @@
     <key>destination</key>
     <string>export</string>
     <key>method</key>
-    <string>development</string> <!-- Set to 'development' if it's a dev build, change to 'ad-hoc' or 'app-store' if distributing -->
+    <string>ad-hoc</string> <!-- Changed from release-testing to ad-hoc -->
     <key>signingStyle</key>
-    <string>manual</string> <!-- Using manual signing -->
+    <string>manual</string> <!-- Manual signing style -->
     <key>provisioningProfiles</key>
     <dict>
-        <key>tv.dorplay.companion</key> <!-- Your app's bundle identifier -->
-        <string>cicd-deploy-build</string> <!-- Your provisioning profile name -->
+        <key>tv.dorplay.companion</key> <!-- Replace this with your app's identifier -->
+        <string>cicd-ad-hoc</string> <!-- Updated with your provisioning profile name -->
     </dict>
     <key>stripSwiftSymbols</key>
     <true/>
     <key>teamID</key>
-    <string>MM7U35V4FZ</string> <!-- Your Apple Developer Team ID -->
+    <string>MM7U35V4FZ</string>
     <key>thinning</key>
     <string>&lt;none&gt;</string>
-    <key>signingCertificate</key>
-    <string>iOS Distribution: PLUG AND PLAY ENTERTAINMENT PRIVATE LIMITED</string> <!-- Your certificate name -->
 </dict>
 </plist>
