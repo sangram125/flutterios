@@ -7,13 +7,13 @@
     <key>destination</key>
     <string>export</string>
     <key>method</key>
-    <string>development</string>
+    <string>ad-hoc</string> <!-- Changed from release-testing to ad-hoc -->
     <key>signingStyle</key>
-    <string>manual</string> <!-- Changed from automatic to manual -->
+    <string>manual</string> <!-- Manual signing style -->
     <key>provisioningProfiles</key>
     <dict>
         <key>tv.dorplay.companion</key> <!-- Replace this with your app's identifier -->
-        <string>cicd-deploy-build</string> <!-- Replace with your provisioning profile name -->
+        <string>new-ad-hoc-cicd</string> <!-- Updated with your provisioning profile name -->
     </dict>
     <key>stripSwiftSymbols</key>
     <true/>
