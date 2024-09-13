@@ -9,7 +9,7 @@
     <key>method</key>
     <string>release-testing</string>
     <key>signingStyle</key>
-    <string>manual</string> <!-- Changed from automatic to manual -->
+    <string>automatic</string> <!-- Changed from automatic to manual -->
     <key>provisioningProfiles</key>
     <dict>
         <key>tv.dorplay.companion</key> <!-- Replace this with your app's identifier -->
