@@ -4,12 +4,17 @@
 <dict>
     <key>compileBitcode</key>
     <false/>
-    <key>destination</key>
+    <key>app-store</key>
     <string>export</string>
     <key>method</key>
     <string>release-testing</string>
     <key>signingStyle</key>
-    <string>manual</string>
+    <string>manual</string> <!-- Changed from automatic to manual -->
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>tv.dorplay.companion</key> <!-- Replace this with your app's identifier -->
+        <string>cicd-new</string> <!-- Replace with your provisioning profile name -->
+    </dict>
     <key>stripSwiftSymbols</key>
     <true/>
     <key>teamID</key>
