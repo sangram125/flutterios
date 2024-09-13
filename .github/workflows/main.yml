@@ -25,8 +25,7 @@ jobs:
           DISTRIBUTION_P12: ${{ secrets.DISTRIBUTION_P12 }}
           P12_PASS: ${{ secrets.P12_PASS }}
           PROD_PROVISION: ${{ secrets.PROD_PROVISION }}
-          AUTH_KEY: ${{ secrets.AUTH_KEY }}
-          APPLE_KEY_ID: ${{ secrets.APPLE_KEY_ID }}
+          
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
