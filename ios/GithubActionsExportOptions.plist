@@ -2,32 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>method</key>
-	<string>app-store</string>
-	<key>teamID</key>
-	<string>MM7U35V4FZ</string>
-	<key>uploadBitcode</key>
-	<true/>
-	<key>compileBitcode</key>
-	<true/>
-	<key>uploadSymbols</key>
-	<true/>
-	<key>signingStyle</key>
-	<string>manual</string>
-	<key>signingCertificate</key>
-	<string>iOS Distribution: POSSIBLE Mobile</string>
-	<key>provisioningProfiles</key>
-	<dict>
-		<key>com.client.appname</key>
-		<string>Client App Release</string>
-		<key>com.client.appname.watchkitapp</key>
-		<string>Client App WatchApp Release</string>
-		<key>com.client.appname.watchkitapp.watchkitextension</key>
-		<string>Client App WatchKitExtension Release</string>
-		<key>com.client.appname.RemoteNotificationServiceExtension</key>
-		<string>Client App PushExtension Release</string>
-		<key>com.client.appname.Stickers</key>
-		<string>Client App Stickers Release</string>
-	</dict>
+    <key>compileBitcode</key>
+    <false/>
+    <key>destination</key>
+    <string>export</string>
+    <key>method</key>
+    <string>release-testing</string>
+    <key>signingStyle</key>
+    <string>manual</string> <!-- Changed from automatic to manual -->
+    <key>provisioningProfiles</key>
+    <dict>
+        <key>tv.dorplay.companion</key> <!-- Replace this with your app's identifier -->
+        <string>cicd-deploy-build</string> <!-- Replace with your provisioning profile name -->
+    </dict>
+    <key>stripSwiftSymbols</key>
+    <true/>
+    <key>teamID</key>
+    <string>MM7U35V4FZ</string>
+    <key>thinning</key>
+    <string>&lt;none&gt;</string>
 </dict>
 </plist>
