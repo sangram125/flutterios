@@ -12,7 +12,7 @@
     <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>MM7U35V4FZ.tv.dorplay.companion</key>
+        <key>tv.dorplay.companion</key>
         <string>Mahendra_AdHoc_Distribution</string>
     </dict>
     <key>stripSwiftSymbols</key>
