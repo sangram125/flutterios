@@ -7,13 +7,13 @@
     <key>destination</key>
     <string>export</string>
     <key>method</key>
-    <string>ad-hoc</string> <!-- Updated to reflect Ad Hoc distribution -->
+    <string>app-store</string> <!-- Updated to reflect Ad Hoc distribution -->
     <key>signingStyle</key>
     <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
         <key>tv.dorplay.companion</key>
-        <string>Mahendra_AdHoc_Distribution</string>
+        <string>cicd-new</string>
     </dict>
     <key>stripSwiftSymbols</key>
     <true/>
