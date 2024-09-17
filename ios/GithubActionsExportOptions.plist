@@ -7,19 +7,21 @@
     <key>destination</key>
     <string>export</string>
     <key>method</key>
-    <string>ad-hoc</string> <!-- Updated to reflect Ad Hoc distribution -->
+    <string>app-store</string> <!-- App Store distribution -->
     <key>signingStyle</key>
     <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
         <key>tv.dorplay.companion</key>
-        <string>Mahendra_AdHoc_Distribution</string>
+        <string>cicd-new</string> <!-- Provisioning profile for App Store -->
     </dict>
     <key>stripSwiftSymbols</key>
     <true/>
     <key>teamID</key>
-    <string>MM7U35V4FZ</string>
+    <string>MM7U35V4FZ</string> <!-- Your team ID -->
     <key>thinning</key>
     <string>&lt;none&gt;</string>
+    <key>signingCertificate</key>
+    <string>iOS Distribution</string> <!-- iOS Distribution certificate -->
 </dict>
 </plist>
