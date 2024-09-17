@@ -1,64 +1,61 @@
-name: Build and Sign Flutter App for iOS
+name: Build and Sign iOS App
 
 on:
   push:
     branches:
-      - master  # Adjust this based on your branch setup
+      - main
 
 jobs:
-  build-ios:
-    runs-on: macos-latest  # Using macOS GitHub-hosted runner
+  build:
+    runs-on: macos-latest
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.22.3" # Adjust based on your Flutter version
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: "3.22.3"
 
-      - name: Install dependencies
-        run: flutter pub get
+    # Create a custom keychain (optional)
+    - name: Create a temporary keychain
+      run: |
+        security create-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
+        security default-keychain -s build.keychain
+        security unlock-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
+        security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
+      env:
+        IOS_GITHUB_KEYCHAIN_PASSWORD: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
 
-      - name: Install CocoaPods
-        run: |
-          sudo gem install cocoapods
-          cd ios && pod install && cd ..
+    # Import the certificate directly from the repository
+    - name: Import iOS distribution certificate
+      run: |
+        security import certs/ios_distribution.p12 -P "$IOS_BUILD_CERTIFICATE_PASSWORD" -k ~/Library/Keychains/build.keychain -A
+        security set-key-partition-list -S apple-tool:,apple: -s -k "$IOS_GITHUB_KEYCHAIN_PASSWORD" ~/Library/Keychains/build.keychain
+      env:
+        IOS_BUILD_CERTIFICATE_PASSWORD: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
+        IOS_GITHUB_KEYCHAIN_PASSWORD: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
 
-      - name: Set up Signing Certificates
-        run: |
-          # Decode certificate and mobile provisioning profile
-          echo "$IOS_BUILD_CERTIFICATE_BASE64" | base64 --decode > ios_distribution.p12
-          echo "$IOS_MOBILE_PROVISIONING_PROFILE_BASE64" | base64 --decode > provisioning.mobileprovision
-          
-          # Import certificate to keychain
-          security import ios_distribution.p12 -P "$IOS_BUILD_CERTIFICATE_PASSWORD" -A
-          
-          # Copy the mobile provisioning profile
-          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-          cp provisioning.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+    # Copy the provisioning profile to the appropriate directory
+    - name: Install provisioning profile
+      run: |
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        cp certs/provisioning.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-      - name: Unlock Keychain
-        run: |
-          security create-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
-          security default-keychain -s build.keychain
-          security unlock-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
-          security set-keychain-settings -t 3600 -u build.keychain
-          security list-keychains -d user -s build.keychain
-          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
+    # Build and sign the iOS app
+    - name: Build iOS app
+      run: |
+        flutter build ios --release --no-codesign
+        xcodebuild \
+          -workspace ios/Runner.xcworkspace \
+          -scheme Runner \
+          -archivePath build/Runner.xcarchive archive
 
-      - name: Build iOS app
-        run: |
-          flutter build ios --release \
-          --dart-define=APP_ENVIRONMENT=prod \
-          --build-name=1.0.0 --build-number=1
-
-      - name: Package the IPA file
-        run: |
-          cd build/ios/iphoneos
-          xcodebuild -exportArchive \
-          -archivePath Runner.xcarchive \
-          -exportOptionsPlist ios/GithubActionsExportOptions.plist \
-          -exportPath build/ios/ipa
-
-      
+    - name: Export IPA
+      run: |
+        xcodebuild \
+          -exportArchive \
+          -archivePath build/Runner.xcarchive \
+          -exportOptionsPlist ios/exportOptions.plist \
+          -exportPath build/Runner.ipa
