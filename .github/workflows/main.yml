@@ -1,29 +1,64 @@
-name: Build and distribute
+name: Build and Sign Flutter App for iOS
 
 on:
   push:
     branches:
-      - master
+      - master  # Adjust this based on your branch setup
 
 jobs:
-  build:
-    name: build
-    runs-on: macos-latest
+  build-ios:
+    runs-on: macos-latest  # Using macOS GitHub-hosted runner
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - uses: cedvdb/action-flutter-build-ios@v1
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          # always use --export-options-plist=ios/GithubActionsExportOptions.plist
-          build-cmd: flutter build ipa --release --export-options-plist=ios/GithubActionsExportOptions.plist
-          certificate-base64: ${{ secrets.IOS_BUILD_CERTIFICATE_BASE64 }}
-          certificate-password: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
-          provisioning-profile-base64: ${{ secrets.IOS_MOBILE_PROVISIONING_PROFILE_BASE64 }}
-          keychain-password: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
+          flutter-version: "3.22.3" # Adjust based on your Flutter version
 
-      - name: Archive IPA
-        uses: actions/upload-artifact@v3
-        with:
-          name: release-ipa
-          # Try running the build locally with the build command to be sure of this path
-          path: build/ios/ipa/App-dev.ipa
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install CocoaPods
+        run: |
+          sudo gem install cocoapods
+          cd ios && pod install && cd ..
+
+      - name: Set up Signing Certificates
+        run: |
+          # Decode certificate and mobile provisioning profile
+          echo "$IOS_BUILD_CERTIFICATE_BASE64" | base64 --decode > ios_distribution.p12
+          echo "$IOS_MOBILE_PROVISIONING_PROFILE_BASE64" | base64 --decode > provisioning.mobileprovision
+          
+          # Import certificate to keychain
+          security import ios_distribution.p12 -P "$IOS_BUILD_CERTIFICATE_PASSWORD" -A
+          
+          # Copy the mobile provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp provisioning.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+      - name: Unlock Keychain
+        run: |
+          security create-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
+          security list-keychains -d user -s build.keychain
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
+
+      - name: Build iOS app
+        run: |
+          flutter build ios --release \
+          --dart-define=APP_ENVIRONMENT=prod \
+          --build-name=1.0.0 --build-number=1
+
+      - name: Package the IPA file
+        run: |
+          cd build/ios/iphoneos
+          xcodebuild -exportArchive \
+          -archivePath Runner.xcarchive \
+          -exportOptionsPlist ios/GithubActionsExportOptions.plist \
+          -exportPath build/ios/ipa
+
+      
