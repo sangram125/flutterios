@@ -12,8 +12,8 @@
     <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>tv.dorplay.companion</key>
-        <string>cicd-new</string> <!-- Provisioning profile for App Store -->
+        <key>tv.dorplay.companion</key> <!-- Bundle identifier -->
+        <string>cicd-new</string> <!-- Provisioning profile name -->
     </dict>
     <key>stripSwiftSymbols</key>
     <true/>
