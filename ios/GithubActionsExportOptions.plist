@@ -20,8 +20,8 @@
     <key>teamID</key>
     <string>MM7U35V4FZ</string> <!-- Your team ID -->
     <key>thinning</key>
-    <string>&lt;none&gt;</string>
+    <string>none</string> <!-- Use 'none' or specify if needed -->
     <key>signingCertificate</key>
-    <string>iOS Distribution</string> <!-- iOS Distribution certificate -->
+    <string>iOS Distribution: PLUG AND PLAY ENTERTAINMENT PRIVATE LIMITED</string> <!-- Exact certificate name -->
 </dict>
 </plist>
