@@ -1,5 +1,3 @@
-name: Build and Sign iOS App
-
 on:
   push:
     branches:
@@ -18,7 +16,7 @@ jobs:
       with:
         flutter-version: "3.22.3"
 
-    # Create a custom keychain (optional)
+    # Create a temporary keychain
     - name: Create a temporary keychain
       run: |
         security create-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
@@ -28,7 +26,7 @@ jobs:
       env:
         IOS_GITHUB_KEYCHAIN_PASSWORD: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
 
-    # Import the certificate directly from the repository
+    # Import the distribution certificate
     - name: Import iOS distribution certificate
       run: |
         security import certs/ios_distribution.p12 -P "$IOS_BUILD_CERTIFICATE_PASSWORD" -k ~/Library/Keychains/build.keychain -A
@@ -37,7 +35,7 @@ jobs:
         IOS_BUILD_CERTIFICATE_PASSWORD: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
         IOS_GITHUB_KEYCHAIN_PASSWORD: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
 
-    # Copy the provisioning profile to the appropriate directory
+    # Install provisioning profile
     - name: Install provisioning profile
       run: |
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
@@ -57,5 +55,5 @@ jobs:
         xcodebuild \
           -exportArchive \
           -archivePath build/Runner.xcarchive \
-          -exportOptionsPlist ios/exportOptions.plist \
+          -exportOptionsPlist ios/GithubActionsExportOptions.plist \
           -exportPath build/Runner.ipa
