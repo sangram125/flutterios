@@ -16,7 +16,6 @@ jobs:
       with:
         flutter-version: "3.22.3"
 
-    # Create a temporary keychain
     - name: Create a temporary keychain
       run: |
         security create-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
@@ -26,7 +25,6 @@ jobs:
       env:
         IOS_GITHUB_KEYCHAIN_PASSWORD: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
 
-    # Import the distribution certificate
     - name: Import iOS distribution certificate
       run: |
         security import certs/ios_distribution.p12 -P "$IOS_BUILD_CERTIFICATE_PASSWORD" -k ~/Library/Keychains/build.keychain -A
@@ -35,13 +33,11 @@ jobs:
         IOS_BUILD_CERTIFICATE_PASSWORD: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
         IOS_GITHUB_KEYCHAIN_PASSWORD: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
 
-    # Install provisioning profile
     - name: Install provisioning profile
       run: |
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         cp certs/provisioning.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
 
-    # Build and sign the iOS app
     - name: Build iOS app
       run: |
         flutter build ios --release --no-codesign
@@ -57,3 +53,9 @@ jobs:
           -archivePath build/Runner.xcarchive \
           -exportOptionsPlist ios/GithubActionsExportOptions.plist \
           -exportPath build/Runner.ipa
+
+    - name: Upload IPA to GitHub Releases
+      uses: actions/upload-artifact@v3
+      with:
+        name: Runner.ipa
+        path: build/Runner.ipa
