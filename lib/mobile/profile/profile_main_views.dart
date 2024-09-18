@@ -172,7 +172,7 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
                                   eventCall.myRemoteEvent('profile_screen');
                                   getIt<SensyApi>().fetchTvDevices().then((devices) {
                                     if (devices.isEmpty) {
-                                      showVanillaToast("No paired devices");
+                                      showVanillaToast("Nox paired devices");
                                       return;
                                     }
                                     final deviceId = devices.first.id.toString();
@@ -256,7 +256,7 @@ class _ProfileMainScreenState extends State<ProfileMainScreen> {
                           context: context,
                           child: CommonAlertDialog.commonDialogContent(
                               context: context,
-                              title: 'Are you sure you want to\nsign out?',
+                              title: 'Are you sure you want to\nSign Out?',
                               yesText: 'Yes, sign out',
                               onYes: () {
                                 Navigator.of(context).pop();

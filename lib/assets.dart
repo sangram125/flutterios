@@ -660,7 +660,7 @@ class Assets {
       'assets/sounds/speech_to_text_stop.m4r';
 
   static const String assets_splash_video_splash_intro_mov =
-      'assets/splash_video/splash_intro.mov';
+      'assets/splash_video/splash_intro.mp4';
 
   static const String assets_txt_files_about_threesixty_txt =
       'assets/txt_files/about_threesixty.txt';

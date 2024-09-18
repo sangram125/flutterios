@@ -47,8 +47,15 @@ class _SplashViewState extends State<SplashView> {
 
   initializeVideo() {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    _controller = VideoPlayerController.asset("assets/splash_video/splash_intro.mov");
+    //_controller = VideoPlayerController.asset("assets/splash_video/splash_intro.mov");
+    _controller = VideoPlayerController.asset("assets/splash_video/dor_splash_video.mp4");
     _controller?.initialize().then((_) {
+      _controller?.addListener(() {
+        if (_controller?.value.position == _controller?.value.duration) {
+          // Video has ended, navigate to the desired page
+          getIt<AppRouter>().go('/');
+        }
+      });
       Timer(const Duration(milliseconds: 100), () {
         setState(() {
           _controller?.play();
@@ -89,11 +96,11 @@ class _SplashViewState extends State<SplashView> {
         });
       });
     }
-    _timer = Timer(const Duration(seconds: 6), () {
-      getIt<AppRouter>().go('/');
-      // contrl.showVideo.value = false;
-      // _startTextChangeTimer();
-    });
+    // _timer = Timer(const Duration(seconds: 6), () {
+    //   getIt<AppRouter>().go('/');
+    //   // contrl.showVideo.value = false;
+    //   // _startTextChangeTimer();
+    // });
   }
 
   void _startTextChangeTimer() {

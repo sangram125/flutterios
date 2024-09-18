@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:dor_companion/data/api/sensy_api.dart';
 import 'package:dor_companion/injection/injection.dart';
@@ -72,12 +74,24 @@ class SensyInterceptor extends Interceptor {
           err.requestOptions.path.contains(ApiEndpoints.requestCrmOtp)) {
         Fluttertoast.showToast(
           msg: "Please activate your DOR TV",
-          toastLength: Toast.LENGTH_SHORT,
+          toastLength: Toast.LENGTH_LONG, // Show toast for 5 seconds
           gravity: ToastGravity.BOTTOM,
           backgroundColor: Colors.red,
           textColor: Colors.white,
           fontSize: 16.0,
         );
+
+// Re-show the toast after 5 seconds (Toast.LENGTH_LONG default duration)
+        Timer(Duration(seconds: 5), () {
+          Fluttertoast.showToast(
+            msg: "Please activate your DOR TV",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            backgroundColor: Colors.red,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+        });
       }
       if (kDebugMode) {}
 
