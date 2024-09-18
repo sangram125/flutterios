@@ -1,61 +1,51 @@
+name: Publish to App Store Connect
+
 on:
   push:
     branches:
       - master
-
+ 
 jobs:
-  build:
-    runs-on: macos-latest
+ build:
+   runs-on: macos-latest
+   env:
+     APP_STORE_CONNECT_ISSUER_ID: ${{ vars.APP_STORE_CONNECT_ISSUER_ID }}
+     APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ vars.APP_STORE_CONNECT_KEY_IDENTIFIER }}
+     APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
+     CERTIFICATE_PRIVATE_KEY: ${{ secrets.CERTIFICATE_PRIVATE_KEY }}
+     APP_STORE_APP_ID: ${{ vars.APP_STORE_APP_ID }}
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+   steps:
+   - uses: actions/checkout@v4
 
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: "3.22.3"
+   - name: Set up Flutter
+     uses: subosito/flutter-action@v2
+     with:
+       channel: 'stable'
 
-    - name: Create a temporary keychain
-      run: |
-        security create-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
-        security default-keychain -s build.keychain
-        security unlock-keychain -p "$IOS_GITHUB_KEYCHAIN_PASSWORD" build.keychain
-        security set-keychain-settings -t 3600 -l ~/Library/Keychains/build.keychain
-      env:
-        IOS_GITHUB_KEYCHAIN_PASSWORD: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
+   - name: Install Codemagic CLI tools
+     run: pip install codemagic-cli-tools
 
-    - name: Import iOS distribution certificate
-      run: |
-        security import certs/ios_distribution.p12 -P "$IOS_BUILD_CERTIFICATE_PASSWORD" -k ~/Library/Keychains/build.keychain -A
-        security set-key-partition-list -S apple-tool:,apple: -s -k "$IOS_GITHUB_KEYCHAIN_PASSWORD" ~/Library/Keychains/build.keychain
-      env:
-        IOS_BUILD_CERTIFICATE_PASSWORD: ${{ secrets.IOS_BUILD_CERTIFICATE_PASSWORD }}
-        IOS_GITHUB_KEYCHAIN_PASSWORD: ${{ secrets.IOS_GITHUB_KEYCHAIN_PASSWORD }}
+   - name: Set up keychain
+     run: keychain initialize
 
-    - name: Install provisioning profile
-      run: |
-        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        cp certs/provisioning.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+   - name: Fetch signing files
+     run: |
+       app-store-connect fetch-signing-files $(xcode-project detect-bundle-id) \
+       --type IOS_APP_STORE \
+       --create       
 
-    - name: Build iOS app
-      run: |
-        flutter build ios --release --no-codesign
-        xcodebuild \
-          -workspace ios/Runner.xcworkspace \
-          -scheme Runner \
-          -archivePath build/Runner.xcarchive archive
+   - name: Set up signing certificate
+     run: keychain add-certificates
 
-    - name: Export IPA
-      run: |
-        xcodebuild \
-          -exportArchive \
-          -archivePath build/Runner.xcarchive \
-          -exportOptionsPlist ios/GithubActionsExportOptions.plist \
-          -exportPath build/Runner.ipa
+   - name: Set up code signing settings on Xcode project
+     run: xcode-project use-profiles
 
-    - name: Upload IPA to GitHub Releases
-      uses: actions/upload-artifact@v3
-      with:
-        name: Runner.ipa
-        path: build/Runner.ipa
+   - name: Increment build number
+     run: |
+       cd ios
+       agvtool new-version -all $(($(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID") + 1))       
+
+   - name: Build ipa for distribution
+     run: |
+              flutter build ipa --release --export-options-plist=$HOME/export_options.plist
